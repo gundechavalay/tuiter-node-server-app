@@ -1,25 +1,23 @@
 import * as tuitsDao from './tuits/tuits-dao.js'
 import mongoose from "mongoose"
 
-const currentUser = {
-
-};
-
-const templateTuit = {
- ...currentUser,
- "topic": "Space",
- "time": "2h",
- "liked": false,
- "replies": 0,
- "retuits": 0,
- "likes": 0,
- "dislikes": 0,
- "comments": 0
-}
-
 const createTuit = async (req, res) => {
     const newTuit = req.body;
+    newTuit.topic = "Space";
+    newTuit.userName = "NASA";
+    newTuit.handleName = "nasa";
+    newTuit.time = "1h";
+    newTuit.image = "nasa.jpg";
+    newTuit.title = "NASA's Mission";
+    newTuit.liked = true;
+    newTuit.disliked = false;
+    newTuit.likes = 1212;
+    newTuit.dislikes = 1212;
+    newTuit.comments = 1212;
+    newTuit.retuits = 1212;
+    console.log(newTuit);
     const insertedTuit = await tuitsDao.createTuit(newTuit);
+    console.log(insertedTuit);
     res.json(insertedTuit);
 }
 const findTuits  = async (req, res) => {
