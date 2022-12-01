@@ -1,5 +1,5 @@
-import posts from "./tuits/tuits.js";
-let tuits = posts;
+import * as tuitsDao from './tuits/tuits-dao.js'
+import mongoose from "mongoose"
 
 const currentUser = {
 
@@ -17,9 +17,8 @@ const templateTuit = {
  "comments": 0
 }
 
-const createTuit = (req, res) => {
+const createTuit = async (req, res) => {
     const newTuit = req.body;
-    newTuit._id = parseInt((new Date()).getTime()+'');
     newTuit.userName = "NASA";
     newTuit.handleName = "nasa";
     newTuit.image = "nasa.jpg";
@@ -32,24 +31,23 @@ const createTuit = (req, res) => {
     newTuit.likes = 0;
     newTuit.dislikes = 0;
     newTuit.comments = 0
-    tuits.push(newTuit);
-    res.json(newTuit);
+    const insertedTuit = await tuitsDao.createTuit(newTuit);
+    res.json(insertedTuit);
 }
-const findTuits  = (req, res) => res.json(tuits);
-const updateTuit = (req, res) => {
-    const tuitdIdToUpdate = parseInt(req.params.tid);
+const findTuits  = async (req, res) => {
+  const tuits = await tuitsDao.findTuits()
+  res.json(tuits);
+}
+const updateTuit = async (req, res) => {
+    const tuitdIdToUpdate = mongoose.Types.ObjectId(req.params.tid);
     const updates = req.body;
-    const tuitIndex = tuits.findIndex(
-      (t) => t._id === tuitdIdToUpdate)
-    tuits[tuitIndex] = 
-      {...tuits[tuitIndex], ...updates};
-    res.sendStatus(200);
+    const status = await tuitsDao.updateTuit(tuitdIdToUpdate, updates);
+    res.json(status);
 }
-const deleteTuit = (req, res) => {
-    const tuitdIdToDelete = parseInt(req.params.tid);
-    tuits = tuits.filter((t) =>
-      t._id !== tuitdIdToDelete);
-    res.sendStatus(200);
+const deleteTuit = async (req, res) => {
+    const tuitdIdToDelete = mongoose.Types.ObjectId(req.params.tid);
+    const status = await tuitsDao.deleteTuit(tuitdIdToDelete);
+    res.json(status);
 }
 
 export default (app) => {
